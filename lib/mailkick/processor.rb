@@ -16,7 +16,9 @@ module Mailkick
       end
 
       verifier = ActiveSupport::MessageVerifier.new(Mailkick.secret_token)
-      token = verifier.generate([email, user.try(:id), user.try(:class).try(:name), list])
+      # email must be base64 encoded, e.g., for '+' character, or MessageVerifier barfs
+      encoded_email = Base64.encode64(email)
+      token = verifier.generate([encoded_email, user.try(:id), user.try(:class).try(:name), list])
 
       parts = message.parts.any? ? message.parts : [message]
       parts.each do |part|

@@ -20,8 +20,12 @@ module Mailkick
     def set_email
       verifier = ActiveSupport::MessageVerifier.new(Mailkick.secret_token)
       begin
-        @email, user_id, user_type, @list = verifier.verify(params[:id])
-        if user_type
+        # email must be base64 encoded, e.g., for '+' character, or MessageVerifier barfs
+        encoded_email, user_id, user_type, @list = verifier.verify(params[:id])
+        @email = Base64.decode64(encoded_email)
+
+        @user = nil
+        if user_type && user_id
           # on the unprobabilistic chance user_type is compromised, not much damage
           @user = user_type.constantize.find(user_id)
         end
