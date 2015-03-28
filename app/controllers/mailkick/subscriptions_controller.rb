@@ -24,6 +24,16 @@ module Mailkick
         encoded_email, user_id, user_type, @list = verifier.verify(params[:id])
         @email = Base64.decode64(encoded_email)
 
+        # if user_type
+        #   # on the unprobabilistic chance user_type is compromised, not much damage
+        #   @user = user_type.constantize.find(user_id)
+        # end
+        # @options = {
+        #     email: @email,
+        #     user: @user,
+        #     list: @list
+        # }
+        
         @user = nil
         if user_type && user_id
           # on the unprobabilistic chance user_type is compromised, not much damage
